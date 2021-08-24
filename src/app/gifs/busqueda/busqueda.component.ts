@@ -12,6 +12,7 @@ export class BusquedaComponent {
   
   @ViewChild('txtBuscar') txtBuscar!:ElementRef<HTMLInputElement>;
 
+  // injectar el servicio 
   constructor(private gifsService: GifsService) { }
   
   buscar(){
