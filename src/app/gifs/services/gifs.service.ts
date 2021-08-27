@@ -9,7 +9,6 @@ export class GifsService {
   private apiKey : string = 'ZDj0Vu2dRCTNls1lHva3klSkZI0naWL3';
   private _historial: string[]=[];
 
-  // Cambiar any por su tipo
   public resultados: Gif[]= [];
 
   get historial(){
@@ -19,9 +18,11 @@ export class GifsService {
   // con esto ya puedo realizar peticiones http como observables y los observablers
   // son mas poderoros que las promesas
     constructor (private http:HttpClient){
-      
+      if (localStorage.getItem('historial')) {
+        this._historial =JSON.parse(localStorage.getItem('historial')!);
+      }
     }
-  // Opcion 1 peticion json 
+   
   buscarGifs (query:string){
     // aqui tambien se podria realiza una validacion de campo vacio.  
     query = query.trim().toLocaleLowerCase();
@@ -29,7 +30,11 @@ export class GifsService {
     if (!this._historial.includes(query)) {
        this._historial.unshift(query);
        this._historial = this._historial.splice(0,10);
+
+       localStorage.setItem('historial', JSON.stringify(this._historial));
     }
+
+
 
     this.http.get<SearchGifsResponse>(`https://api.giphy.com/v1/gifs/search?api_key=ZDj0Vu2dRCTNls1lHva3klSkZI0naWL3&q=${query}&limit=10`)
     .subscribe((resp) => {
@@ -37,27 +42,8 @@ export class GifsService {
       this.resultados = resp.data;
     });
     
-    // fetch("https://api.giphy.com/v1/gifs/search?api_key=ZDj0Vu2dRCTNls1lHva3klSkZI0naWL3&q=dragon ball z&limit=10")
-    // .then(resp =>{
-    //   resp.json().then(data =>{
-    //     console.log(data);
-    //   });
-    // });
+    
     console.log(this._historial);
   }
 
-// Opcion 2 
-  async buscarGifs2 (query:string){
-    // aqui tambien se podria realiza una validacion de campo vacio.  
-    query = query.trim().toLocaleLowerCase();
-
-    if (!this._historial.includes(query)) {
-       this._historial.unshift(query);
-       this._historial = this._historial.splice(0,10);
-    }
-    const resp = await fetch("https://api.giphy.com/v1/gifs/search?api_key=ZDj0Vu2dRCTNls1lHva3klSkZI0naWL3&q=dragon ball z&limit=10");
-    const data = await resp.json();
-    console.log(data);
-    
-  }
 }
